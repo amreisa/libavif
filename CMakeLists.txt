@@ -539,9 +539,15 @@ if(AVIF_BUILD_APPS)
     endif()
     target_link_libraries(avifdec avif_apps)
 
+    add_executable(new_avifenc apps/new_avifenc.c)
+    if(AVIF_LOCAL_LIBGAV1 OR AVIF_CODEC_LIBRARIES MATCHES vmaf)
+        set_target_properties(new_avifenc PROPERTIES LINKER_LANGUAGE "CXX")
+    endif()
+    target_link_libraries(new_avifenc avif_apps)
+
     if(NOT SKIP_INSTALL_APPS AND NOT SKIP_INSTALL_ALL)
         install(
-            TARGETS avifenc avifdec
+            TARGETS avifenc avifdec new_avifenc
             RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
