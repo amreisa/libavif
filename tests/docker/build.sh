@@ -2,7 +2,7 @@
 
 # Tests system-wide libavif shared library installation correct behavior, using Ubuntu in Docker. Run:
 #
-#     docker run -it ubuntu
+#     docker run -it ubuntu:rolling
 #
 # ... then run this script inside of there. When it finishes, avifenc and avifdec should
 # be in /usr/bin and offer all codecs chosen in the last cmake command in this script.
@@ -19,11 +19,10 @@ set -e
 
 # build env
 apt update
-DEBIAN_FRONTEND="noninteractive" apt install -y build-essential libjpeg-dev libpng-dev libssl-dev ninja-build cmake pkg-config git perl vim meson cargo nasm
+DEBIAN_FRONTEND="noninteractive" apt install -y build-essential libjpeg-dev libpng-dev libssl-dev ninja-build cmake pkg-config git perl vim meson cargo cargo-c nasm
 
 # Rust env
 export PATH="$HOME/.cargo/bin:$PATH"
-cargo install cargo-c
 
 # aom
 cd
@@ -49,7 +48,7 @@ git clone -b v0.18.0 --depth 1 https://chromium.googlesource.com/codecs/libgav1
 cd libgav1
 mkdir build
 cd build
-cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=1 -DCMAKE_BUILD_TYPE=Release -DLIBGAV1_THREADPOOL_USE_STD_MUTEX=1 -DLIBGAV1_ENABLE_EXAMPLES=0 -DLIBGAV1_ENABLE_TESTS=0 ..
+cmake -G Ninja -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=1 -DCMAKE_BUILD_TYPE=Release -DLIBGAV1_THREADPOOL_USE_STD_MUTEX=1 -DLIBGAV1_ENABLE_EXAMPLES=0 -DLIBGAV1_ENABLE_TESTS=0 -DLIBGAV1_MAX_BITDEPTH=12 ..
 ninja install
 
 # rav1e
