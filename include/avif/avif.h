@@ -539,6 +539,7 @@ typedef struct avifImage
     avifRWData xmp;
 } avifImage;
 
+// avifImageCreate() and avifImageCreateEmpty() return NULL if arguments are invalid or if a memory allocation failed.
 AVIF_API avifImage * avifImageCreate(uint32_t width, uint32_t height, uint32_t depth, avifPixelFormat yuvFormat);
 AVIF_API avifImage * avifImageCreateEmpty(void); // helper for making an image to decode into
 AVIF_API avifResult avifImageCopy(avifImage * dstImage, const avifImage * srcImage, avifPlanesFlags planes); // deep copy
@@ -664,6 +665,9 @@ typedef struct avifRGBImage
                           // the alpha bits as if they were all 1.
     avifBool alphaPremultiplied; // indicates if RGB value is pre-multiplied by alpha. Default: false
     avifBool isFloat; // indicates if RGBA values are in half float (f16) format. Valid only when depth == 16. Default: false
+    int maxThreads; // Number of threads to be used for the YUV to RGB conversion. Note that this value is ignored for RGB to YUV
+                    // conversion. Setting this to zero has the same effect as setting it to one. Negative values are invalid.
+                    // Default: 1.
 
     uint8_t * pixels;
     uint32_t rowBytes;
@@ -817,7 +821,9 @@ typedef uint32_t avifStrictFlags;
 // Useful stats related to a read/write
 typedef struct avifIOStats
 {
+    // Size in bytes of the AV1 image item or track data containing color samples.
     size_t colorOBUSize;
+    // Size in bytes of the AV1 image item or track data containing alpha samples.
     size_t alphaOBUSize;
 } avifIOStats;
 
@@ -1148,6 +1154,7 @@ typedef struct avifEncoder
     struct avifCodecSpecificOptions * csOptions;
 } avifEncoder;
 
+// avifEncoderCreate() returns NULL if a memory allocation failed.
 AVIF_API avifEncoder * avifEncoderCreate(void);
 AVIF_API avifResult avifEncoderWrite(avifEncoder * encoder, const avifImage * image, avifRWData * output);
 AVIF_API void avifEncoderDestroy(avifEncoder * encoder);
@@ -1203,7 +1210,7 @@ AVIF_API avifResult avifEncoderFinish(avifEncoder * encoder, avifRWData * output
 // key must be non-NULL, but passing a NULL value will delete the pending key, if it exists.
 // Setting an incorrect or unknown option for the current codec will cause errors of type
 // AVIF_RESULT_INVALID_CODEC_SPECIFIC_OPTION from avifEncoderWrite() or avifEncoderAddImage().
-AVIF_API void avifEncoderSetCodecSpecificOption(avifEncoder * encoder, const char * key, const char * value);
+AVIF_API avifResult avifEncoderSetCodecSpecificOption(avifEncoder * encoder, const char * key, const char * value);
 
 // Helpers
 AVIF_API avifBool avifImageUsesU16(const avifImage * image);

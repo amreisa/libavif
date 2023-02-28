@@ -95,6 +95,11 @@ if(AVIF_ENABLE_GTEST)
     target_include_directories(avifgridapitest PRIVATE ${GTEST_INCLUDE_DIRS})
     add_test(NAME avifgridapitest COMMAND avifgridapitest)
 
+    add_executable(avifimagetest gtest/avifimagetest.cc)
+    target_link_libraries(avifimagetest aviftest_helpers ${GTEST_BOTH_LIBRARIES})
+    target_include_directories(avifimagetest PRIVATE ${GTEST_INCLUDE_DIRS})
+    add_test(NAME avifimagetest COMMAND avifimagetest)
+
     add_library(avifincrtest_helpers OBJECT gtest/avifincrtest_helpers.cc)
     target_link_libraries(avifincrtest_helpers avif ${AVIF_PLATFORM_LIBRARIES} ${GTEST_LIBRARIES})
     target_include_directories(avifincrtest_helpers PUBLIC ${GTEST_INCLUDE_DIRS})
@@ -102,6 +107,11 @@ if(AVIF_ENABLE_GTEST)
     add_executable(avifincrtest gtest/avifincrtest.cc)
     target_link_libraries(avifincrtest aviftest_helpers avifincrtest_helpers)
     add_test(NAME avifincrtest COMMAND avifincrtest ${CMAKE_CURRENT_SOURCE_DIR}/data/)
+
+    add_executable(avifiostatstest gtest/avifiostatstest.cc)
+    target_link_libraries(avifiostatstest avif_internal aviftest_helpers ${GTEST_LIBRARIES})
+    target_include_directories(avifiostatstest PRIVATE ${GTEST_INCLUDE_DIRS})
+    add_test(NAME avifiostatstest COMMAND avifiostatstest ${CMAKE_CURRENT_SOURCE_DIR}/data/)
 
     add_executable(avifmetadatatest gtest/avifmetadatatest.cc)
     target_link_libraries(avifmetadatatest aviftest_helpers ${GTEST_LIBRARIES})
